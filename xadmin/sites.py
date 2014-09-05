@@ -303,7 +303,6 @@ class AdminSite(object):
                                   path, wrap(self.create_admin_view(clz_or_func)) if type(clz_or_func) == type and issubclass(clz_or_func, BaseAdminView) else include(clz_or_func(self)),
                                   name=name) for path, clz_or_func, name in self._registry_views]
                                 )
-
         # Add in each model's views.
         for model, admin_class in self._registry.iteritems():
             view_urls = [url(
