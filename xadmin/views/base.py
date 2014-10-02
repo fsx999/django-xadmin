@@ -182,7 +182,7 @@ class BaseAdminObject(object):
 
     def render_response(self, content, response_type='json'):
         if response_type == 'json':
-            response = HttpResponse(mimetype="application/json; charset=UTF-8")
+            response = HttpResponse(content_type="application/json; charset=UTF-8")
             response.write(
                 json.dumps(content, cls=JSONEncoder, ensure_ascii=False))
             return response
@@ -295,6 +295,7 @@ class CommAdminView(BaseAdminView):
     menu_template = 'xadmin/includes/sitemenu_default.html'
 
     site_title = None
+    site_footer = None
     global_models_icon = {}
     default_model_icon = None
     apps_label_title = {}
@@ -402,12 +403,16 @@ class CommAdminView(BaseAdminView):
 
             def filter_item(item):
                 if 'menus' in item:
+                    before_filter_length = len(item['menus'])
                     item['menus'] = [filter_item(
                         i) for i in item['menus'] if check_menu_permission(i)]
+                    after_filter_length = len(item['menus'])
+                    if after_filter_length == 0 and before_filter_length > 0:
+                        return None
                 return item
 
             nav_menu = [filter_item(item) for item in menus if check_menu_permission(item)]
-            nav_menu = filter(lambda i: bool(i['menus']), nav_menu)
+            nav_menu = filter(lambda x:x, nav_menu)
 
             if not settings.DEBUG:
                 self.request.session['nav_menu'] = json.dumps(nav_menu)
@@ -436,6 +441,7 @@ class CommAdminView(BaseAdminView):
             'menu_template': self.menu_template,
             'nav_menu': nav_menu,
             'site_title': self.site_title or _(u'Django Xadmin'),
+            'site_footer': self.site_footer or _(u'my-company.inc 2013'),
             'breadcrumbs': self.get_breadcrumb()
         })
 
