@@ -282,7 +282,6 @@ class AdminSite(object):
     def get_urls(self):
         from django.conf.urls import patterns, url, include
         from xadmin.views.base import BaseAdminView
-
         if settings.DEBUG:
             self.check_dependencies()
 
@@ -339,3 +338,5 @@ class AdminSite(object):
 # This global object represents the default admin site, for the common case.
 # You can instantiate AdminSite in your own code to create a custom admin site.
 site = AdminSite()
+
+
