@@ -67,8 +67,17 @@ class InlineStyle(object):
     def update_layout(self, helper):
         pass
 
+
     def get_attrs(self):
-        return {}
+        fields = []
+        readonly_fields = []
+        if len(self.formset):
+            fields = [f for k, f in self.formset[0].fields.items() if k != DELETION_FIELD_NAME]
+            readonly_fields = [f for f in getattr(self.formset[0], 'readonly_fields', [])]
+        return {
+            'fields': fields,
+            'readonly_fields': readonly_fields
+        }
 style_manager.register_style('stacked', InlineStyle)
 
 
@@ -100,6 +109,7 @@ class TableInlineStyle(InlineStyle):
         if len(self.formset):
             fields = [f for k, f in self.formset[0].fields.items() if k != DELETION_FIELD_NAME]
             readonly_fields = [f for f in getattr(self.formset[0], 'readonly_fields', [])]
+
         return {
             'fields': fields,
             'readonly_fields': readonly_fields
