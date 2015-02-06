@@ -564,6 +564,7 @@ class ModelAdminView(CommAdminView):
         return self.model._default_manager.get_query_set()
 
     def has_view_permission(self, obj=None):
+        print self.model_info
         return ('view' not in self.remove_permissions) and (self.user.has_perm('%s.view_%s' % self.model_info) or \
             self.user.has_perm('%s.change_%s' % self.model_info))
 
