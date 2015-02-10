@@ -180,7 +180,6 @@ class FilterPlugin(BaseAdminPlugin):
                         use_distinct = True
                         break
             self.admin_view.search_query = query
-
         if use_distinct:
             return queryset.distinct()
         else:
@@ -198,6 +197,7 @@ class FilterPlugin(BaseAdminPlugin):
 
     # Block Views
     def block_nav_menu(self, context, nodes):
+
         if self.has_filters:
             nodes.append(loader.render_to_string('xadmin/blocks/model_list.nav_menu.filters.html', context_instance=context))
 

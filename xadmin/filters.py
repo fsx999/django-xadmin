@@ -108,7 +108,6 @@ class FieldFilter(BaseFilter):
         self.context_params = {}
 
         super(FieldFilter, self).__init__(request, params, model, admin_view)
-
         for name, format in self.lookup_formats.items():
             p = format % field_path
             self.context_params["%s_name" % name] = FILTER_PREFIX + p

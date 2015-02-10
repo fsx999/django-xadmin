@@ -146,7 +146,6 @@ class QuickFilterPlugin(BaseAdminPlugin):
         self.has_filters = bool(self.filter_specs)
         self.admin_view.quickfilter['filter_specs'] = self.filter_specs
         self.admin_view.quickfilter['used_filter_num'] = len(filter(lambda f: f.is_used, self.filter_specs))
- 
         if use_distinct:
             return queryset.distinct()
         else:
