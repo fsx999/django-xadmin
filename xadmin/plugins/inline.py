@@ -225,24 +225,24 @@ class InlineModelAdmin(ModelFormAdminView):
         if readonly_fields:
             for form in instance:
                 form.readonly_fields = []
-                if form.is_valid():
 
-                    inst = form.save(commit=False)
-                    if inst:
-                        for readonly_field in readonly_fields:
-                            value = None
-                            label = None
-                            if readonly_field in inst._meta.get_all_field_names():
-                                label = inst._meta.get_field_by_name(readonly_field)[0].verbose_name
-                                value = unicode(getattr(inst, readonly_field))
-                            elif inspect.ismethod(getattr(inst, readonly_field, None)):
-                                value = getattr(inst, readonly_field)()
-                                label = getattr(getattr(inst, readonly_field), 'short_description', readonly_field)
-                            elif inspect.ismethod(getattr(self, readonly_field, None)):
-                                value = getattr(self, readonly_field)(inst)
-                                label = getattr(getattr(self, readonly_field), 'short_description', readonly_field)
-                            if value:
-                                form.readonly_fields.append({'label': label, 'contents': value})
+
+                inst = form.save(commit=False)
+                if inst:
+                    for readonly_field in readonly_fields:
+                        value = None
+                        label = None
+                        if readonly_field in inst._meta.get_all_field_names():
+                            label = inst._meta.get_field_by_name(readonly_field)[0].verbose_name
+                            value = unicode(getattr(inst, readonly_field))
+                        elif inspect.ismethod(getattr(inst, readonly_field, None)):
+                            value = getattr(inst, readonly_field)()
+                            label = getattr(getattr(inst, readonly_field), 'short_description', readonly_field)
+                        elif inspect.ismethod(getattr(self, readonly_field, None)):
+                            value = getattr(self, readonly_field)(inst)
+                            label = getattr(getattr(self, readonly_field), 'short_description', readonly_field)
+                        if value:
+                            form.readonly_fields.append({'label': label, 'contents': value})
         return instance
 
     def has_auto_field(self, form):
