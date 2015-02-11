@@ -243,6 +243,7 @@ class InlineModelAdmin(ModelFormAdminView):
                             label = getattr(getattr(self, readonly_field), 'short_description', readonly_field)
                         if value:
                             form.readonly_fields.append({'label': label, 'contents': value})
+
         return instance
 
     def has_auto_field(self, form):
