@@ -390,8 +390,8 @@ class QuickBtnWidget(BaseWidget):
                 btn['title'] = model._meta.verbose_name
                 btn['icon'] = self.dashboard.get_model_icon(model)
             else:
-                if 'perms' in b and not self.user.is_superuser:
-                    if not self.user.groups.filter(name__in=b['perms']).exists():
+                if 'groups' in b and not self.user.is_superuser:
+                    if not self.user.groups.filter(name__in=b['groups']).exists():
                         continue
                 try:
                     btn['url'] = reverse(b['url'])
