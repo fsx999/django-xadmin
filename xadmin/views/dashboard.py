@@ -403,8 +403,10 @@ class QuickBtnWidget(BaseWidget):
             if 'icon' in b:
                 btn['icon'] = b['icon']
             btns.append(btn)
-
-        context.update({'btns': btns})
+        if btn:
+            context.update({'btns': btns})
+        else:
+            raise WidgetDataError
 
     def has_perm(self):
         return True
