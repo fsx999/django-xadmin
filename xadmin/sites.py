@@ -314,7 +314,6 @@ class AdminSite(object):
             if url_kwargs:
                 for kwarg in url_kwargs:
                     p += r'{}/'.format(kwarg)
-                print p
             urlpatterns += patterns('',
                                     url(
                                     p % (

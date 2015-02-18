@@ -569,9 +569,9 @@ class ListAdminView(ModelAdminView):
             item.row['is_display_first'] = False
             item.is_display_link = True
             if self.list_display_links_details:
-                item_res_uri = self.model_admin_url("detail", getattr(obj, self.pk_attname))
+                item_res_uri = self.model_admin_url("detail", pk=getattr(obj, self.pk_attname))
                 if item_res_uri:
-                    edit_url = self.model_admin_url("change", getattr(obj, self.pk_attname))
+                    edit_url = self.model_admin_url("change", pk=getattr(obj, self.pk_attname))
                     item.wraps.append('<a data-res-uri="%s" data-edit-uri="%s" class="details-handler" rel="tooltip" title="%s">%%s</a>'
                                      % (item_res_uri, edit_url, _(u'Details of %s') % str(obj)))
             else:

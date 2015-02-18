@@ -517,16 +517,21 @@ class ModelAdminView(CommAdminView):
     @filter_hook
     def get_object_url(self, obj):
         if self.has_change_permission(obj):
-            return self.model_admin_url("change", getattr(obj, self.opts.pk.attname))
+            return self.model_admin_url("change", pk=getattr(obj, self.opts.pk.attname))
         elif self.has_view_permission(obj):
-            return self.model_admin_url("detail", getattr(obj, self.opts.pk.attname))
+            return self.model_admin_url("detail", pk=getattr(obj, self.opts.pk.attname))
         else:
             return None
 
     def model_admin_url(self, name, *args, **kwargs):
+        k = dict(self.kwargs)
+        if name not in ['delete', 'change', 'detail', 'dashboard']:
+            k.pop('pk', None)
+        else:
+            k.update(kwargs)
         return reverse(
             "%s:%s_%s_%s" % (self.admin_site.app_name, self.opts.app_label,
-            self.module_name, name), args=args, kwargs=kwargs)
+            self.module_name, name), kwargs=k)
 
     def get_model_perms(self):
         """

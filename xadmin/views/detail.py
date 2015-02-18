@@ -133,8 +133,9 @@ class DetailAdminView(ModelAdminView):
     detail_template = None
     form_layout = None
 
-    def init_request(self, object_id, *args, **kwargs):
-        self.obj = self.get_object(unquote(object_id))
+    def init_request(self, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        self.obj = self.get_object(unquote(pk))
 
         if not self.has_view_permission(self.obj):
             raise PermissionDenied
@@ -142,7 +143,7 @@ class DetailAdminView(ModelAdminView):
         if self.obj is None:
             raise Http404(
                 _('%(name)s object with primary key %(key)r does not exist.') %
-                {'name': force_unicode(self.opts.verbose_name), 'key': escape(object_id)})
+                {'name': force_unicode(self.opts.verbose_name), 'key': escape(pk)})
         self.org_obj = self.obj
 
     @filter_hook

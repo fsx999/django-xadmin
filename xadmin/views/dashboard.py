@@ -393,10 +393,18 @@ class QuickBtnWidget(BaseWidget):
                 if 'groups' in b and not self.user.is_superuser:
                     if not self.user.groups.filter(name__in=b['groups']).exists():
                         continue
+                url = b['url']
                 try:
-                    btn['url'] = reverse(b['url'])
+                    if isinstance(url, dict):
+                        kwargs = url.get('kwargs', {})
+                        args = url.get('args', list())
+                        u = url.get('url')
+                        btn['url'] = reverse(u, args=args, kwargs=kwargs)
+                    else:
+                        u = url
+                        btn['url'] = reverse(u)
                 except NoReverseMatch:
-                    btn['url'] = b['url']
+                    btn['url'] = url
 
             if 'title' in b:
                 btn['title'] = b['title']

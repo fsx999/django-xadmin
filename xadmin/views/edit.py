@@ -417,15 +417,16 @@ class CreateAdminView(ModelFormAdminView):
 
 class UpdateAdminView(ModelFormAdminView):
 
-    def init_request(self, object_id, *args, **kwargs):
-        self.org_obj = self.get_object(unquote(object_id))
+    def init_request(self, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        self.org_obj = self.get_object(unquote(pk))
 
         if not self.has_change_permission(self.org_obj):
             raise PermissionDenied
 
         if self.org_obj is None:
             raise Http404(_('%(name)s object with primary key %(key)r does not exist.') %
-                          {'name': force_unicode(self.opts.verbose_name), 'key': escape(object_id)})
+                          {'name': force_unicode(self.opts.verbose_name), 'key': escape(pk)})
 
         # comm method for both get and post
         self.prepare_form()
@@ -454,7 +455,7 @@ class UpdateAdminView(ModelFormAdminView):
 
         item = {'title': force_unicode(self.org_obj)}
         if self.has_change_permission():
-            item['url'] = self.model_admin_url('change', self.org_obj.pk)
+            item['url'] = self.model_admin_url('change', pk=self.org_obj.pk)
         bcs.append(item)
 
         return bcs

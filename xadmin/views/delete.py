@@ -15,15 +15,16 @@ from xadmin.views.base import ModelAdminView, filter_hook, csrf_protect_m
 class DeleteAdminView(ModelAdminView):
     delete_confirmation_template = None
 
-    def init_request(self, object_id, *args, **kwargs):
+    def init_request(self, *args, **kwargs):
         "The 'delete' admin view for this model."
-        self.obj = self.get_object(unquote(object_id))
+        pk = self.kwargs.get('pk')
+        self.obj = self.get_object(unquote(pk))
 
         if not self.has_delete_permission(self.obj):
             raise PermissionDenied
 
         if self.obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(self.opts.verbose_name), 'key': escape(object_id)})
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(self.opts.verbose_name), 'key': escape(pk)})
 
         using = router.db_for_write(self.model)
 
@@ -34,7 +35,7 @@ class DeleteAdminView(ModelAdminView):
 
     @csrf_protect_m
     @filter_hook
-    def get(self, request, object_id):
+    def get(self, request, **kwargs):
         context = self.get_context()
 
         return TemplateResponse(request, self.delete_confirmation_template or
@@ -43,7 +44,7 @@ class DeleteAdminView(ModelAdminView):
     @csrf_protect_m
     @transaction.commit_on_success
     @filter_hook
-    def post(self, request, object_id):
+    def post(self, request, **kwargs):
         if self.perms_needed:
             raise PermissionDenied
 
