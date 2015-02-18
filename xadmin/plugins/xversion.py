@@ -266,7 +266,7 @@ class RevisionListView(BaseReversionView):
             'object': self.obj,
             'app_label': opts.app_label,
             "changelist_url": self.model_admin_url("changelist"),
-            "update_url": self.model_admin_url("change", self.obj.pk),
+            "update_url": self.model_admin_url("change", pk=self.obj.pk),
             'opts': opts,
         })
         return context
@@ -455,7 +455,7 @@ class RevisionView(BaseRevisionView):
     def post_response(self):
         self.message_user(_('The %(model)s "%(name)s" was reverted successfully. You may edit it again below.') %
                           {"model": force_unicode(self.opts.verbose_name), "name": unicode(self.new_obj)}, 'success')
-        return HttpResponseRedirect(self.model_admin_url('change', self.new_obj.pk))
+        return HttpResponseRedirect(self.model_admin_url('change', pk=self.new_obj.pk))
 
 
 class RecoverView(BaseRevisionView):
@@ -492,7 +492,7 @@ class RecoverView(BaseRevisionView):
     def post_response(self):
         self.message_user(_('The %(model)s "%(name)s" was recovered successfully. You may edit it again below.') %
                           {"model": force_unicode(self.opts.verbose_name), "name": unicode(self.new_obj)}, 'success')
-        return HttpResponseRedirect(self.model_admin_url('change', self.new_obj.pk))
+        return HttpResponseRedirect(self.model_admin_url('change', pk=self.new_obj.pk))
 
 
 class InlineDiffField(Field):

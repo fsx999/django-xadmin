@@ -214,7 +214,7 @@ class ChangePasswordView(ModelAdminView):
         if self.form.is_valid():
             self.form.save()
             self.message_user(_('Password changed successfully.'), 'success')
-            return HttpResponseRedirect(self.model_admin_url('change', self.obj.pk))
+            return HttpResponseRedirect(self.model_admin_url('change', pk=self.obj.pk))
         else:
             return self.get_response()
 

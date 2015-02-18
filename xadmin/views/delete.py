@@ -91,7 +91,7 @@ class DeleteAdminView(ModelAdminView):
         })
         item = {'title': _('Delete')}
         if self.has_delete_permission():
-            item['url'] = self.model_admin_url('delete', self.obj.pk)
+            item['url'] = self.model_admin_url('delete', pk=self.obj.pk)
         bcs.append(item)
 
         return bcs
