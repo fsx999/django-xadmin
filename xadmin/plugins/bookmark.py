@@ -48,7 +48,7 @@ class BookmarkPlugin(BaseAdminPlugin):
         has_selected = False
         menu_title = _(u"Bookmark")
         list_base_url = reverse('xadmin:%s_%s_changelist' %
-                                model_info, current_app=self.admin_site.name)
+                                model_info, kwargs=self.kwargs,  current_app=self.admin_site.name)
 
         # local bookmarks
         for bk in self.list_bookmarks:
@@ -97,7 +97,7 @@ class BookmarkPlugin(BaseAdminPlugin):
                 has_selected = True
 
         post_url = reverse('xadmin:%s_%s_bookmark' % model_info,
-                           current_app=self.admin_site.name)
+                           current_app=self.admin_site.name, kwargs=self.kwargs)
 
         new_context = {
             'bk_menu_title': menu_title,
