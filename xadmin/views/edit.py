@@ -307,7 +307,7 @@ class ModelFormAdminView(ModelAdminView):
 
         if self.org_obj and new_context['show_delete_link']:
             new_context['delete_url'] = self.model_admin_url(
-                'delete', self.org_obj.pk)
+                'delete', pk=self.org_obj.pk)
 
         context = super(ModelFormAdminView, self).get_context()
         context.update(new_context)
@@ -391,12 +391,12 @@ class CreateAdminView(ModelFormAdminView):
 
         msg = _(
             'The %(name)s "%(obj)s" was added successfully.') % {'name': force_unicode(self.opts.verbose_name),
-                                                                 'obj': "<a class='alert-link' href='%s'>%s</a>" % (self.model_admin_url('change', self.new_obj._get_pk_val()), force_unicode(self.new_obj))}
+                                                                 'obj': "<a class='alert-link' href='%s'>%s</a>" % (self.model_admin_url('change', pk=self.new_obj._get_pk_val()), force_unicode(self.new_obj))}
 
         if "_continue" in request.REQUEST:
             self.message_user(
                 msg + ' ' + _("You may edit it again below."), 'success')
-            return self.model_admin_url('change', self.new_obj._get_pk_val())
+            return self.model_admin_url('change', pk=self.new_obj._get_pk_val())
 
         if "_addanother" in request.REQUEST:
             self.message_user(msg + ' ' + (_("You may add another %s below.") % force_unicode(self.opts.verbose_name)), 'success')

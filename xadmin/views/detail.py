@@ -251,7 +251,7 @@ class DetailAdminView(ModelAdminView):
         bcs = super(DetailAdminView, self).get_breadcrumb()
         item = {'title': force_unicode(self.obj)}
         if self.has_view_permission():
-            item['url'] = self.model_admin_url('detail', self.obj.pk)
+            item['url'] = self.model_admin_url('detail', pk=self.obj.pk)
         bcs.append(item)
         return bcs
 

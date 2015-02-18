@@ -29,12 +29,12 @@ def register_builtin_views(site):
     site.register_modelview(r'^$', ListAdminView, name='%s_%s_changelist')
     site.register_modelview(r'^add/$', CreateAdminView, name='%s_%s_add')
     site.register_modelview(
-        r'^(?P<pk>.+)/delete/$', DeleteAdminView, name='%s_%s_delete')
+        r'^(?P<pk>.*)/delete/$', DeleteAdminView, name='%s_%s_delete')
     site.register_modelview(
         r'^(?P<pk>.+)/update/$', UpdateAdminView, name='%s_%s_change')
     site.register_modelview(
-        r'^(?P<pk>.+)/detail/$', DetailAdminView, name='%s_%s_detail')
+        r'^(?P<pk>.*)/detail/$', DetailAdminView, name='%s_%s_detail')
     site.register_modelview(
-        r'^(?P<pk>.+)/dashboard/$', ModelDashboard, name='%s_%s_dashboard')
+        r'^(?P<pk>.*)/dashboard/$', ModelDashboard, name='%s_%s_dashboard')
 
     site.set_loginview(LoginView)
