@@ -6,4 +6,12 @@
   {{ formset.formset.management_form }}
   {{ formset.formset.non_form_errors }}
   {% crispy formset.formset.0 formset.formset.helper %}
+  {% for r_o_f in formset.formset.0.readonly_fields %}
+    {% if r_o_f.contents %}
+    <div id="div_id_{{ formset.opts.verbose_name_plural|lower }}-{{ forloop.counter0 }}-{{ r_o_f.label_for_id }}" class="form-group">
+        <label class="control-label">{{ r_o_f.label|safe }}</label>
+        <div class="controls"><p class="form-control-static">{{ r_o_f.contents|safe }}<p class="form-control-static"></div>
+    </div>
+    {% endif %}
+  {% endfor %}
 {% endblock box_content %}
