@@ -469,6 +469,7 @@ class ModelAdminView(CommAdminView):
     ordering = None
     model = None
     remove_permissions = []
+    pattern = r'^%s/%s/'
 
     def __init__(self, request, *args, **kwargs):
         self.opts = self.model._meta
@@ -580,3 +581,11 @@ class ModelAdminView(CommAdminView):
 
     def has_delete_permission(self, obj=None):
         return ('delete' not in self.remove_permissions) and self.user.has_perm('%s.delete_%s' % self.model_info)
+
+    def get_pattern(self):
+        if hasattr(self, 'pattern'):
+            return self.pattern
+        return None
+
+    def get_kwargs_url(self, instance=None):
+        return {}

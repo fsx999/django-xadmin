@@ -49,14 +49,14 @@ class RelateMenuPlugin(BaseAdminPlugin):
 
             verbose_name = force_unicode(r.opts.verbose_name)
             lookup_name = '%s__%s__exact' % (f.name, rel_name)
-
+            register = self.admin_site._registry[r.model]
             link = ''.join(('<li class="with_menu_btn">',
 
                             '<a href="%s?%s=%s" title="%s"><i class="icon fa fa-th-list"></i> %s</a>' %
                           (
                             reverse('%s:%s_%s_changelist' % (
-                                    self.admin_site.app_name, label, model_name)),
-                            RELATE_PREFIX + lookup_name, str(instance.pk), verbose_name, verbose_name) if view_perm else
+                                    self.admin_site.app_name, label, model_name), kwargs=r.get_kwargs_url()),
+                            RELATE_PREFIX + lookup_name, verbose_name, verbose_name, str(instance.pk)) if view_perm else
                             '<a><span class="text-muted"><i class="icon fa fa-blank"></i> %s</span></a>' % verbose_name,
 
                             '<a class="add_link dropdown-menu-btn" href="%s?%s=%s"><i class="icon fa fa-plus pull-right"></i></a>' %

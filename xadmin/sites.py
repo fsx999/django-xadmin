@@ -310,14 +310,10 @@ class AdminSite(object):
                     self.create_model_admin_view(clz, model, admin_class)),
                 name=name % (model._meta.app_label, model._meta.module_name))
                 for path, clz, name in self._registry_modelviews]
-            url_kwargs = getattr(admin_class, 'url_kwargs', None)
-            p = r'^%s/%s/'
-            if url_kwargs:
-                for kwarg in url_kwargs:
-                    p += r'{}/'.format(kwarg)
+            pattern = getattr(admin_class, 'pattern', r'^%s/%s/')
             urlpatterns += patterns('',
                                     url(
-                                    p % (
+                                    pattern % (
                                         model._meta.app_label, model._meta.module_name),
                                     include(patterns('', *view_urls)))
                                     )
