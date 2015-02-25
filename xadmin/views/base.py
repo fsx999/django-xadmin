@@ -526,7 +526,9 @@ class ModelAdminView(CommAdminView):
 
     def model_admin_url(self, name, *args, **kwargs):
         k = dict(self.kwargs)
-        if name not in ['delete', 'change', 'detail', 'dashboard']:
+        if name not in ['revision']:
+            k.pop('pk_version', None)
+        if name not in ['delete', 'change', 'detail', 'dashboard', 'revisionlist', 'revision', 'recover']:
             k.pop('pk', None)
         else:
             k.update(kwargs)

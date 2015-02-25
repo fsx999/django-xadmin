@@ -144,21 +144,24 @@ class ReversionPlugin(BaseAdminPlugin):
     def post(self, __, request, *args, **kwargs):
         return self.revision_context_manager.create_revision(manage_manually=False)(self.do_post(__))()
 
-    # def save_models(self, __):
-    #     self.revision_context_manager.create_revision(manage_manually=True)(__)()
+    def save_models(self, __):
+        self.revision_context_manager.create_revision(manage_manually=True)(__)()
 
-    #     if self.admin_view.org_obj is None:
-    #         self.save_revision(self.admin_view.new_obj, VERSION_ADD, _(u"Initial version."))
-    #     else:
-    #         self.save_revision(self.admin_view.new_obj, VERSION_CHANGE, _(u"Change version."))
+        if self.admin_view.org_obj is None:
+            # self.save_revision(self.admin_view.new_obj, VERSION_ADD, _(u"Initial version."))
+            self.save_revision(self.admin_view.new_obj, 'default', _(u"Initial version."))
+        else:
+            # self.save_revision(self.admin_view.new_obj, VERSION_CHANGE, _(u"Change version."))
+            self.save_revision(self.admin_view.new_obj, 'default', _(u"Change version."))
 
-    # def save_related(self, __):
-    #     self.revision_context_manager.create_revision(manage_manually=True)(__)()
+    def save_related(self, __):
+        self.revision_context_manager.create_revision(manage_manually=True)(__)()
 
-    # def delete_model(self, __):
-    #     self.save_revision(self.admin_view.obj, VERSION_DELETE, \
-    #         _(u"Deleted %(verbose_name)s.") % {"verbose_name": self.opts.verbose_name})
-    #     self.revision_context_manager.create_revision(manage_manually=True)(__)()
+    def delete_model(self, __):
+        # self.save_revision(self.admin_view.obj, VERSION_DELETE, \
+        self.save_revision(self.admin_view.obj, 'default', \
+            _(u"Deleted %(verbose_name)s.") % {"verbose_name": self.opts.verbose_name})
+        self.revision_context_manager.create_revision(manage_manually=True)(__)()
 
     # Block Views
     def block_top_toolbar(self, context, nodes):
@@ -170,7 +173,7 @@ class ReversionPlugin(BaseAdminPlugin):
             self.admin_view, 'org_obj', getattr(self.admin_view, 'obj', None))
         if obj:
             revisionlist_url = self.admin_view.model_admin_url(
-                'revisionlist', quote(obj.pk))
+                'revisionlist', pk=quote(obj.pk))
             nodes.append(mark_safe('<a href="%s" class="navbar-toggle pull-right"><i class="fa fa-time"></i></a>' % revisionlist_url))
 
     def block_nav_btns(self, context, nodes):
@@ -178,7 +181,7 @@ class ReversionPlugin(BaseAdminPlugin):
             self.admin_view, 'org_obj', getattr(self.admin_view, 'obj', None))
         if obj:
             revisionlist_url = self.admin_view.model_admin_url(
-                'revisionlist', quote(obj.pk))
+                'revisionlist', pk=quote(obj.pk))
             nodes.append(mark_safe('<a href="%s" class="btn btn-default"><i class="fa fa-time"></i> <span>%s</span></a>' % (revisionlist_url, _(u'History'))))
 
 
@@ -250,7 +253,7 @@ class RevisionListView(BaseReversionView):
         action_list = [
             {
                 "revision": version.revision,
-                "url": self.model_admin_url('revision', quote(version.object_id), version.id),
+                "url": self.model_admin_url('revision', pk=quote(version.object_id), pk_version=version.id),
                 "version": version
             }
             for version
@@ -271,8 +274,8 @@ class RevisionListView(BaseReversionView):
         })
         return context
 
-    def get(self, request, object_id, *args, **kwargs):
-        object_id = unquote(object_id)
+    def get(self, request,  *args, **kwargs):
+        object_id = unquote(kwargs['pk'])
         self.obj = self.get_object(object_id)
 
         if not self.has_change_permission(self.obj):
@@ -301,8 +304,8 @@ class RevisionListView(BaseReversionView):
 
         return obj, detail
 
-    def post(self, request, object_id, *args, **kwargs):
-        object_id = unquote(object_id)
+    def post(self, request, *args, **kwargs):
+        object_id = unquote(kwargs['pk'])
         self.obj = self.get_object(object_id)
 
         if not self.has_change_permission(self.obj):
@@ -358,8 +361,8 @@ class RevisionListView(BaseReversionView):
             'opts': self.opts,
             'version_a': version_a,
             'version_b': version_b,
-            'revision_a_url': self.model_admin_url('revision', quote(version_a.object_id), version_a.id),
-            'revision_b_url': self.model_admin_url('revision', quote(version_b.object_id), version_b.id),
+            'revision_a_url': self.model_admin_url('revision', pk=quote(version_a.object_id), pk_version=version_a.id),
+            'revision_b_url': self.model_admin_url('revision', pk=quote(version_b.object_id), pk_version=version_b.id),
             'diffs': diffs
         })
 
@@ -413,12 +416,12 @@ class RevisionView(BaseRevisionView):
 
     revision_form_template = None
 
-    def init_request(self, object_id, version_id):
+    def init_request(self, pk, pk_version, ):
         self.detail = self.get_model_view(
-            DetailAdminView, self.model, object_id)
+            DetailAdminView, self.model, pk=pk)
         self.org_obj = self.detail.obj
         self.version = get_object_or_404(
-            Version, pk=version_id, object_id=unicode(self.org_obj.pk))
+            Version, pk=pk_version, object_id=unicode(self.org_obj.pk))
 
         self.prepare_form()
 
@@ -637,15 +640,14 @@ class ReversionAdmin(object):
     inlines = [VersionInline]
 
 site.register(Revision, ReversionAdmin)
-
 site.register_modelview(
     r'^recover/$', RecoverListView, name='%s_%s_recoverlist')
 site.register_modelview(
-    r'^recover/([^/]+)/$', RecoverView, name='%s_%s_recover')
+    r'^recover/(?P<pk>[^/]+)/$', RecoverView, name='%s_%s_recover')
 site.register_modelview(
-    r'^([^/]+)/revision/$', RevisionListView, name='%s_%s_revisionlist')
+    r'^(?P<pk>[^/]+)/revision/$', RevisionListView, name='%s_%s_revisionlist')
 site.register_modelview(
-    r'^([^/]+)/revision/([^/]+)/$', RevisionView, name='%s_%s_revision')
+    r'^(?P<pk>[^/]+)/revision/(?P<pk_version>[^/]+)/$', RevisionView, name='%s_%s_revision')
 
 site.register_plugin(ReversionPlugin, ListAdminView)
 site.register_plugin(ReversionPlugin, ModelFormAdminView)
