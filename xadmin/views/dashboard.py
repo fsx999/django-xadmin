@@ -391,7 +391,7 @@ class QuickBtnWidget(BaseWidget):
                 btn['icon'] = self.dashboard.get_model_icon(model)
             else:
                 if 'groups' in b and not self.user.is_superuser:
-                    if not self.user.groups.filter(name__in=b['groups']).exists():
+                    if not self.user.groups.filter(name__in=b['groups']):
                         continue
                 url = b['url']
                 try:
