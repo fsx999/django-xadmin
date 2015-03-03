@@ -411,7 +411,7 @@ class QuickBtnWidget(BaseWidget):
             if 'icon' in b:
                 btn['icon'] = b['icon']
             btns.append(btn)
-        if btn:
+        if btns:
             context.update({'btns': btns})
         else:
             raise WidgetDataError
