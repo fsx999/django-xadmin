@@ -39,11 +39,11 @@ class EditablePlugin(BaseAdminPlugin):
                                           return_attr=False
                                           )
 
-            item.wraps.insert(0, '<span class="editable-field">%s</span>')
+            item.wraps.insert(0, '<span class="editable-field">%s</span>' % getattr(obj, field_name))
             item.btns.append((
                 '<a class="editable-handler" title="%s" data-editable-field="%s" data-editable-loadurl="%s">' +
                 '<i class="fa fa-edit"></i></a>') %
-                (_(u"Enter %s") % field_label, field_name, self.admin_view.model_admin_url('patch', pk) + '?fields=' + field_name))
+                (_(u"Enter %s") % field_label, field_name, self.admin_view.model_admin_url('patch', pk=pk) + '?fields=' + field_name))
 
             if field_name not in self.editable_need_fields:
                 self.editable_need_fields[field_name] = item.field
@@ -60,7 +60,8 @@ class EditablePlugin(BaseAdminPlugin):
 
 class EditPatchView(ModelFormAdminView, ListAdminView):
 
-    def init_request(self, object_id, *args, **kwargs):
+    def init_request(self, *args, **kwargs):
+        object_id = kwargs['pk']
         self.org_obj = self.get_object(unquote(object_id))
 
         # For list view get new field display html
@@ -105,7 +106,7 @@ class EditPatchView(ModelFormAdminView, ListAdminView):
             return mark_safe(text) if allow_tags else conditional_escape(text)
 
     @filter_hook
-    def get(self, request, object_id):
+    def get(self, request, *args, **kwargs):
         model_fields = [f.name for f in self.opts.fields]
         fields = [f for f in request.GET['fields'].split(',') if f in model_fields]
         defaults = {
@@ -123,14 +124,14 @@ class EditPatchView(ModelFormAdminView, ListAdminView):
         s = '{% load i18n crispy_forms_tags %}<form method="post" action="{{action_url}}">{% crispy form %}' + \
             '<button type="submit" class="btn btn-success btn-block btn-sm">{% trans "Apply" %}</button></form>'
         t = template.Template(s)
-        c = template.Context({'form': form, 'action_url': self.model_admin_url('patch', self.org_obj.pk)})
+        c = template.Context({'form': form, 'action_url': self.model_admin_url('patch', pk=self.org_obj.pk)})
 
         return HttpResponse(t.render(c))
 
     @filter_hook
     @csrf_protect_m
     @transaction.commit_on_success
-    def post(self, request, object_id):
+    def post(self, request, *args, **kwargs):
         model_fields = [f.name for f in self.opts.fields]
         fields = [f for f in request.POST.keys() if f in model_fields]
         defaults = {
@@ -156,4 +157,4 @@ class EditPatchView(ModelFormAdminView, ListAdminView):
         return self.render_response(result)
 
 site.register_plugin(EditablePlugin, ListAdminView)
-site.register_modelview(r'^(.+)/patch/$', EditPatchView, name='%s_%s_patch')
+site.register_modelview(r'^(?P<pk>.+)/patch/$', EditPatchView, name='%s_%s_patch')

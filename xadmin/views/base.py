@@ -528,7 +528,7 @@ class ModelAdminView(CommAdminView):
         k = dict(self.kwargs)
         if name not in ['revision']:
             k.pop('pk_version', None)
-        if name not in ['delete', 'change', 'detail', 'dashboard', 'revisionlist', 'revision', 'recover']:
+        if name not in ['delete', 'change', 'detail', 'dashboard', 'revisionlist', 'revision', 'recover', 'patch']:
             k.pop('pk', None)
         else:
             k.update(kwargs)
