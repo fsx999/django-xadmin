@@ -1,4 +1,5 @@
 from django import template
+from django.contrib.admin.util import display_for_value
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.db import models, transaction
 from django.forms.models import modelform_factory
@@ -39,7 +40,7 @@ class EditablePlugin(BaseAdminPlugin):
                                           return_attr=False
                                           )
 
-            item.wraps.insert(0, '<span class="editable-field">%s</span>' % getattr(obj, field_name))
+            item.wraps.insert(0, '<span class="editable-field">%s</span>' % display_for_value(getattr(obj, field_name)))
             item.btns.append((
                 '<a class="editable-handler" title="%s" data-editable-field="%s" data-editable-loadurl="%s">' +
                 '<i class="fa fa-edit"></i></a>') %
