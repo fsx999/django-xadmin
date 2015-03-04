@@ -217,6 +217,7 @@ class ListAdminView(ModelAdminView):
         # First, get queryset from base class.
         queryset = self.queryset()
 
+
         # Use select_related() if one of the list_display options is a field
         # with a relationship and the provided queryset doesn't already have
         # select_related defined.
