@@ -84,7 +84,7 @@ class JSONEncoder(DjangoJSONEncoder):
 
 
 class UserSettings(models.Model):
-    user = models.ForeignKey(AUTH_USER_MODEL, verbose_name=_(u"user"))
+    user = models.ForeignKey(AUTH_USER_MODEL, verbose_name=_(u"user"), related_name='user_settings')
     key = models.CharField(_('Settings Key'), max_length=256)
     value = models.TextField(_('Settings Content'))
 
