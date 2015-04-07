@@ -569,7 +569,7 @@ class ModelAdminView(CommAdminView):
         Returns a QuerySet of all model instances that can be edited by the
         admin site. This is used by changelist_view.
         """
-        return self.model._default_manager.get_query_set()
+        return self.model._default_manager.get_queryset()
 
     def has_view_permission(self, obj=None):
         return ('view' not in self.remove_permissions) and (self.user.has_perm('%s.view_%s' % self.model_info) or \
