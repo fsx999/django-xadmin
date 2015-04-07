@@ -45,7 +45,8 @@ class RelatedFieldWidgetWrapper(forms.Widget):
     admin interface.
     """
     def __init__(self, widget, rel, add_url, rel_add_url):
-        self.is_hidden = widget.is_hidden
+        if widget.is_hidden:
+            self.input_type = 'hidden'
         self.needs_multipart_form = widget.needs_multipart_form
         self.attrs = widget.attrs
         self.choices = widget.choices
@@ -77,7 +78,7 @@ class RelatedFieldWidgetWrapper(forms.Widget):
                               self.add_url, (_('Create New %s') % self.rel.to._meta.verbose_name), name,
                               "%s?_field=%s&%s=" % (self.rel_add_url, name, name)))
         output.extend(['<div class="control-wrap" id="id_%s_wrap_container">' % name,
-                  self.widget.render(name, value, *args, **kwargs), '</div>'])
+                       self.widget.render(name, value, *args, **kwargs), '</div>'])
         return mark_safe(u''.join(output))
 
     def build_attrs(self, extra_attrs=None, **kwargs):

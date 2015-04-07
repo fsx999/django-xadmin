@@ -72,7 +72,7 @@ class InputGroup(layout.Field):
 
         super(InputGroup, self).__init__(field, **kwargs)
 
-    def render(self, form, form_style, context, template_pack='bootstrap'):
+    def render(self, form, form_style, context, template_pack='bootstrap3', extra_context=None, **kwargs):
         classes = form.fields[self.field].widget.attrs.get('class', '')
         context.update(
             {'inputs': self.inputs, 'classes': classes.replace('form-control', '')})
@@ -80,7 +80,7 @@ class InputGroup(layout.Field):
             context['wrapper_class'] = self.wrapper_class
         return render_field(
             self.field, form, form_style, context, template=self.template,
-            attrs=self.attrs, template_pack=template_pack)
+            attrs=self.attrs, template_pack=template_pack, extra_context=extra_context, **kwargs)
 
 
 class PrependedText(InputGroup):

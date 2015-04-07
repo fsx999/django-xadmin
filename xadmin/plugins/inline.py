@@ -20,7 +20,7 @@ class ShowField(Field):
         if admin_view.style == 'table':
             self.template = "xadmin/layout/field_value_td.html"
 
-    def render(self, form, form_style, context):
+    def render(self, form, form_style, context, template_pack='bootstrap3', **kwargs):
         html = ''
         detail = form.detail
         for field in self.fields:
@@ -33,10 +33,11 @@ class ShowField(Field):
 
 class DeleteField(Field):
 
-    def render(self, form, form_style, context):
+    def render(self, form, form_style, context, template_pack='boostrap3', extra_context=None, **kwargs):
         if form.instance.pk:
             self.attrs['type'] = 'hidden'
-            return super(DeleteField, self).render(form, form_style, context)
+            return super(DeleteField, self).render(form, form_style, context,
+                                                   template_pack, extra_context, **kwargs)
         else:
             return ""
 
@@ -339,7 +340,7 @@ class InlineFormset(Fieldset):
         self.flat_attrs = flatatt(kwargs)
         self.extra_attrs = formset.style.get_attrs()
 
-    def render(self, form, form_style, context):
+    def render(self, form, form_style, context, template_pack='bootstrap3', **kwargs):
         return render_to_string(
             self.template, dict({'formset': self, 'prefix': self.formset.prefix, 'inline_style': self.inline_style}, **self.extra_attrs),
             context_instance=context)
@@ -351,7 +352,7 @@ class Inline(Fieldset):
         self.model = rel_model
         self.fields = []
 
-    def render(self, form, form_style, context):
+    def render(self, form, form_style, context, template_pack='bootstrap3', **kwargs):
         return ""
 
 
