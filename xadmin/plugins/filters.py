@@ -5,7 +5,7 @@ from xadmin.util import get_fields_from_path, lookup_needs_distinct
 from django.core.exceptions import SuspiciousOperation, ImproperlyConfigured, ValidationError
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
-from django.db.models.related import RelatedObject
+from django.db.models.fields.related import ManyToOneRel
 from django.db.models.sql.query import LOOKUP_SEP, QUERY_TERMS
 from django.template import loader
 from django.utils.encoding import smart_str
@@ -57,7 +57,7 @@ class FilterPlugin(BaseAdminPlugin):
             if hasattr(field, 'rel'):
                 model = field.rel.to
                 rel_name = field.rel.get_related_field().name
-            elif isinstance(field, RelatedObject):
+            elif isinstance(field, ManyToOneRel):
                 model = field.model
                 rel_name = model._meta.pk.name
             else:

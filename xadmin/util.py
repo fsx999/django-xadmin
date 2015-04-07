@@ -2,7 +2,7 @@ import django
 from django.db import models
 from django.db.models.sql.query import LOOKUP_SEP
 from django.db.models.deletion import Collector
-from django.db.models.related import RelatedObject
+from django.db.models.fields.related import ManyToOneRel
 from django.forms.forms import pretty_name
 from django.utils import formats
 from django.utils.html import escape
@@ -361,7 +361,7 @@ def label_for_field(name, model, model_admin=None, return_attr=False):
     attr = None
     try:
         field = model._meta.get_field_by_name(name)[0]
-        if isinstance(field, RelatedObject):
+        if isinstance(field, ManyToOneRel):
             label = field.opts.verbose_name
         else:
             label = field.verbose_name
@@ -383,7 +383,7 @@ def label_for_field(name, model, model_admin=None, return_attr=False):
                 parts = name.split("__")
                 rel_name,name = parts[0],"__".join(parts[1:])
                 field = model._meta.get_field_by_name(rel_name)[0]
-                if isinstance(field, RelatedObject):
+                if isinstance(field, ManyToOneRel):
                     label = field.opts.verbose_name
                 else:
                     label = field.verbose_name

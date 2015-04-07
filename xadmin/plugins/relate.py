@@ -4,7 +4,7 @@ from django.utils.encoding import force_unicode
 from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
 from django.db.models.sql.query import LOOKUP_SEP
-from django.db.models.related import RelatedObject
+from django.db.models.fields.related import ManyToOneRel
 from django.utils.translation import ugettext as _
 from django.db import models
 
@@ -95,7 +95,7 @@ class RelateObject(object):
         parts = lookup.split(LOOKUP_SEP)
         field = self.opts.get_field_by_name(parts[0])[0]
 
-        if not hasattr(field, 'rel') and not isinstance(field, RelatedObject):
+        if not hasattr(field, 'rel') and not isinstance(field, ManyToOneRel):
             raise Exception(u'Relate Lookup field must a related field')
 
         if hasattr(field, 'rel'):

@@ -133,11 +133,11 @@ class BaseAdminObject(object):
     def get_model_url(self, model, name, *args, **kwargs):
         return reverse(
             '%s:%s_%s_%s' % (self.admin_site.app_name, model._meta.app_label,
-                             model._meta.module_name, name),
+                             model._meta.model_name, name),
             args=args, kwargs=kwargs, current_app=self.admin_site.name)
 
     def get_model_perm(self, model, name):
-        return '%s.%s_%s' % (model._meta.app_label, name, model._meta.module_name)
+        return '%s.%s_%s' % (model._meta.app_label, name, model._meta.model_name)
 
     def has_model_perm(self, model, name, user=None):
         user = user or self.user
@@ -474,7 +474,7 @@ class ModelAdminView(CommAdminView):
     def __init__(self, request, *args, **kwargs):
         self.opts = self.model._meta
         self.app_label = self.model._meta.app_label
-        self.module_name = self.model._meta.module_name
+        self.module_name = self.model._meta.model_name
         self.model_info = (self.app_label, self.module_name)
 
         super(ModelAdminView, self).__init__(request, *args, **kwargs)
