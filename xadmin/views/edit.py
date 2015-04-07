@@ -168,12 +168,12 @@ class ModelFormAdminView(ModelAdminView):
         exclude = exclude or None
         defaults = {
             "form": self.form,
-            "fields": self.fields and list(self.fields) or None,
+            "fields": self.fields and list(self.fields) or [f[0].name for f in self.model._meta.get_concrete_fields_with_model()],
             "exclude": exclude,
             "formfield_callback": self.formfield_for_dbfield,
         }
         defaults.update(kwargs)
-        return modelform_factory(self.model, **defaults)
+        return modelform_factory(self.model,  **defaults)
 
     @filter_hook
     def get_form_layout(self):

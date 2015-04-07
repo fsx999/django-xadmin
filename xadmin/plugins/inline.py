@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from xadmin.layout import FormHelper, Layout, flatatt, Container, Column, Field, Fieldset
 from xadmin.sites import site
 from xadmin.views import BaseAdminPlugin, ModelFormAdminView, DetailAdminView, filter_hook
-
+from django.contrib.auth import get_permission_codename
 
 class ShowField(Field):
     template = "xadmin/layout/field_value.html"
@@ -174,6 +174,7 @@ class InlineModelAdmin(ModelFormAdminView):
             "can_delete": can_delete,
         }
         defaults.update(kwargs)
+        defaults['fields'] =  [f[0].name for f in self.model._meta.get_concrete_fields_with_model()]
         return inlineformset_factory(self.parent_model, self.model, **defaults)
 
     @filter_hook
@@ -266,8 +267,9 @@ class InlineModelAdmin(ModelFormAdminView):
     def has_add_permission(self):
         if self.opts.auto_created:
             return self.has_change_permission()
+        print dir(self.opts)
         return self.user.has_perm(
-            self.opts.app_label + '.' + self.opts.get_add_permission())
+            self.opts.app_label + '.' + get_permission_codename('add', self.opts))
 
     def has_change_permission(self):
         opts = self.opts
@@ -277,13 +279,13 @@ class InlineModelAdmin(ModelFormAdminView):
                     opts = field.rel.to._meta
                     break
         return self.user.has_perm(
-            opts.app_label + '.' + opts.get_change_permission())
+            opts.app_label + '.' + get_permission_codename('change', opts))
 
     def has_delete_permission(self):
         if self.opts.auto_created:
             return self.has_change_permission()
         return self.user.has_perm(
-            self.opts.app_label + '.' + self.opts.get_delete_permission())
+            self.opts.app_label + '.' + get_permission_codename('delete', self.opts))
 
 
 class GenericInlineModelAdmin(InlineModelAdmin):
