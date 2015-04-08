@@ -483,7 +483,7 @@ class NotRelationField(Exception):
 
 def get_model_from_relation(field):
     if isinstance(field, ManyToOneRel):
-        return field.model
+        return field.related_model
     elif getattr(field, 'rel'):  # or isinstance?
         return field.rel.to
     else:
@@ -537,6 +537,7 @@ def get_fields_from_path(model, path):
         else:
             parent = model
         fields.append(parent._meta.get_field_by_name(piece)[0])
+        # fields.append(parent._meta.get_field(piece))
     return fields
 
 

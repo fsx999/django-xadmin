@@ -309,7 +309,7 @@ class RelatedFieldSearchFilter(FieldFilter):
 
     @classmethod
     def test(cls, field, request, params, model, admin_view, field_path):
-        if not (hasattr(field, 'rel') and bool(field.rel) or isinstance(field, models.related.RelatedObject)):
+        if not (hasattr(field, 'rel') and bool(field.rel) or isinstance(field, ManyToOneRel)):
             return False
         related_modeladmin = admin_view.admin_site._registry.get(
             get_model_from_relation(field))
@@ -360,7 +360,7 @@ class RelatedFieldListFilter(ListFieldFilter):
 
     @classmethod
     def test(cls, field, request, params, model, admin_view, field_path):
-        return (hasattr(field, 'rel') and bool(field.rel) or isinstance(field, models.related.RelatedObject))
+        return (hasattr(field, 'rel') and bool(field.rel) or isinstance(field, ManyToOneRel))
 
     def __init__(self, field, request, params, model, model_admin, field_path):
         other_model = get_model_from_relation(field)
