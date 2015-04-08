@@ -12,7 +12,7 @@ from django.core.cache import cache, get_cache
 
 from xadmin.views.list import EMPTY_CHANGELIST_VALUE
 import datetime
-
+from django.db.models.fields.related import ManyToOneRel
 FILTER_PREFIX = '_p_'
 SEARCH_VAR = '_q_'
 
@@ -382,7 +382,7 @@ class RelatedFieldListFilter(ListFieldFilter):
         self.title = self.lookup_title
 
     def has_output(self):
-        if (isinstance(self.field, models.related.RelatedObject)
+        if (isinstance(self.field, ManyToOneRel)
                 and self.field.field.null or hasattr(self.field, 'rel')
                 and self.field.null):
             extra = 1
@@ -408,7 +408,7 @@ class RelatedFieldListFilter(ListFieldFilter):
                 }, [self.lookup_isnull_name]),
                 'display': val,
             }
-        if (isinstance(self.field, models.related.RelatedObject)
+        if (isinstance(self.field, ManyToOneRel)
                 and self.field.field.null or hasattr(self.field, 'rel')
                 and self.field.null):
             yield {

@@ -65,6 +65,7 @@ class UserAdmin(object):
 
     def get_field_attrs(self, db_field, **kwargs):
         attrs = super(UserAdmin, self).get_field_attrs(db_field, **kwargs)
+        print db_field.name
         if db_field.name == 'user_permissions':
             attrs['form_class'] = PermissionModelMultipleChoiceField
         return attrs

@@ -20,7 +20,7 @@ class ShowField(Field):
         if admin_view.style == 'table':
             self.template = "xadmin/layout/field_value_td.html"
 
-    def render(self, form, form_style, context, template_pack='bootstrap3', **kwargs):
+    def render(self, form, form_style, context, template_pack='bootstrap3'):
         html = ''
         detail = form.detail
         for field in self.fields:
@@ -33,11 +33,11 @@ class ShowField(Field):
 
 class DeleteField(Field):
 
-    def render(self, form, form_style, context, template_pack='boostrap3', extra_context=None, **kwargs):
+    def render(self, form, form_style, context, template_pack='bootstrap3'):
         if form.instance.pk:
             self.attrs['type'] = 'hidden'
             return super(DeleteField, self).render(form, form_style, context,
-                                                   template_pack, extra_context, **kwargs)
+                                                   template_pack)
         else:
             return ""
 
@@ -175,7 +175,7 @@ class InlineModelAdmin(ModelFormAdminView):
             "can_delete": can_delete,
         }
         defaults.update(kwargs)
-        defaults['fields'] =  [f[0].name for f in self.model._meta.get_concrete_fields_with_model()]
+        defaults['fields'] = self.fields or '__all__'
         return inlineformset_factory(self.parent_model, self.model, **defaults)
 
     @filter_hook
@@ -248,7 +248,6 @@ class InlineModelAdmin(ModelFormAdminView):
                                 form.readonly_fields.append({'label': label, 'contents': value})
                 except ValueError:
                     pass
-
         return instance
 
     def has_auto_field(self, form):
@@ -268,7 +267,6 @@ class InlineModelAdmin(ModelFormAdminView):
     def has_add_permission(self):
         if self.opts.auto_created:
             return self.has_change_permission()
-        print dir(self.opts)
         return self.user.has_perm(
             self.opts.app_label + '.' + get_permission_codename('add', self.opts))
 
@@ -431,7 +429,6 @@ class InlineFormsetPlugin(BaseAdminPlugin):
         # fixed #176 bug, change dict to list
         fs = [(f.model, InlineFormset(f, allow_blank)) for f in self.formsets]
         replace_inline_objects(layout, fs)
-
         if fs:
             container = get_first_field(layout, Column)
             if not container:
@@ -442,7 +439,6 @@ class InlineFormsetPlugin(BaseAdminPlugin):
             # fixed #176 bug, change dict to list
             for key, value in fs:
                 container.append(value)
-
         return layout
 
     def get_media(self, media):
@@ -460,7 +456,7 @@ class InlineFormsetPlugin(BaseAdminPlugin):
             replace_field_to_value(formset.helper.layout, inline)
             model = inline.model
             opts = model._meta
-            fake_admin_class = type(str('%s%sFakeAdmin' % (opts.app_label, opts.module_name)), (object, ), {'model': model})
+            fake_admin_class = type(str('%s%sFakeAdmin' % (opts.app_label, opts.model_name)), (object, ), {'model': model})
             for form in formset.forms:
                 instance = form.instance
                 if instance.pk:

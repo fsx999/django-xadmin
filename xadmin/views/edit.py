@@ -168,7 +168,7 @@ class ModelFormAdminView(ModelAdminView):
         exclude = exclude or None
         defaults = {
             "form": self.form,
-            "fields": self.fields and list(self.fields) or [f[0].name for f in self.model._meta.get_concrete_fields_with_model()],
+            "fields": self.fields and list(self.fields) or '__all__',
             "exclude": exclude,
             "formfield_callback": self.formfield_for_dbfield,
         }
