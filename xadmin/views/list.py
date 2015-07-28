@@ -595,6 +595,7 @@ class ListAdminView(ModelAdminView):
         results = []
         for obj in self.result_list:
             results.append(self.result_row(obj))
+        print results
         return results
 
     @filter_hook

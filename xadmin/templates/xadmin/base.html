@@ -30,8 +30,11 @@
 </head>
 <body class="{% block bodyclass %}{% endblock %}">
   {% block body %}{% endblock body %}
+  {% block js %}
   {% vendor 'jquery-ui-sortable.js' 'bootstrap.js' 'xadmin.main.js' 'xadmin.responsive.js' %}
   {{ media.js }}
+  {% endblock %}
+
   {% block extrabody %}{% endblock %}
   {% view_block 'extrabody' %}
 </body>
