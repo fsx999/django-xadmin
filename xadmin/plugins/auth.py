@@ -1,6 +1,6 @@
 # coding=utf-8
 from django import forms
-from django.contrib.auth.forms import (UserCreationForm, UserChangeForm,
+from django.contrib.auth.forms import ( UserChangeForm,
                                        AdminPasswordChangeForm, PasswordChangeForm)
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import PermissionDenied
@@ -16,6 +16,41 @@ from xadmin.sites import site
 from xadmin.util import unquote, User
 from xadmin.views import BaseAdminPlugin, ModelFormAdminView, ModelAdminView, CommAdminView, csrf_protect_m
 
+class UserCreationForm(forms.ModelForm):
+    """
+    A form that creates a user, with no privileges, from the given username and
+    password.
+    """
+    error_messages = {
+        'password_mismatch': _("The two password fields didn't match."),
+    }
+    password1 = forms.CharField(label=_("Password"),
+        widget=forms.PasswordInput)
+    password2 = forms.CharField(label=_("Password confirmation"),
+        widget=forms.PasswordInput,
+        help_text=_("Enter the same password as above, for verification."))
+
+    class Meta:
+        model = User
+        fields = ("username",)
+        exclude = ("password", )
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                self.error_messages['password_mismatch'],
+                code='password_mismatch',
+            )
+        return password2
+
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        if commit:
+            user.save()
+        return user
 
 ACTION_NAME = {
     'add': _('Can add %s'),
@@ -65,7 +100,6 @@ class UserAdmin(object):
 
     def get_field_attrs(self, db_field, **kwargs):
         attrs = super(UserAdmin, self).get_field_attrs(db_field, **kwargs)
-        print db_field.name
         if db_field.name == 'user_permissions':
             attrs['form_class'] = PermissionModelMultipleChoiceField
         return attrs
@@ -83,6 +117,30 @@ class UserAdmin(object):
                 Main(
                     Fieldset('',
                              'username', 'password',
+                             css_class='unsort no_title'
+                             ),
+                    Fieldset(_('Personal info'),
+                             Row('first_name', 'last_name'),
+                             'email'
+                             ),
+                    Fieldset(_('Permissions'),
+                             'groups', 'user_permissions'
+                             ),
+                    Fieldset(_('Important dates'),
+                             'last_login', 'date_joined'
+                             ),
+                ),
+                Side(
+                    Fieldset(_('Status'),
+                             'is_active', 'is_staff', 'is_superuser',
+                             ),
+                )
+            )
+        else:
+            self.form_layout = (
+                Main(
+                    Fieldset('',
+                             'username', 'password1', 'password2',
                              css_class='unsort no_title'
                              ),
                     Fieldset(_('Personal info'),
