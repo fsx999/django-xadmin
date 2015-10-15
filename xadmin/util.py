@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.sql.query import LOOKUP_SEP
 from django.db.models.deletion import Collector
 from django.db.models.fields.related import ManyToOneRel
+from django.contrib.auth import get_permission_codename
 from django.forms.forms import pretty_name
 from django.utils import formats
 from django.utils.html import escape
@@ -200,8 +201,7 @@ def get_deleted_objects(objs, opts, user, admin_site, using):
                                    opts.app_label,
                                    opts.object_name.lower()),
                                 None, (quote(obj._get_pk_val()),))
-            p = '%s.%s' % (opts.app_label,
-                           opts.get_delete_permission())
+            p = '%s.%s' % (opts.app_label, get_permission_codename('delete', opts))
             if not user.has_perm(p):
                 perms_needed.add(opts.verbose_name)
             # Display a link to the admin page.
