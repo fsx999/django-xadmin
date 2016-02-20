@@ -419,8 +419,10 @@ class InlineFormsetPlugin(BaseAdminPlugin):
 
     def get_error_list(self, errors):
         for fs in self.formsets:
+
             errors.extend(fs.non_form_errors())
             for errors_in_inline_form in fs.errors:
+
                 errors.extend(errors_in_inline_form.values())
         return errors
 
